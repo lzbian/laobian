@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\highlight\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Include="**\style.css;**\*.cshtml" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\common\Laobian.Common.csproj" />
+  </ItemGroup>
+
+  <Target Name="Uglify CSS" AfterTargets="PostBuildEvent">
+    <Exec Command="uglifycss --expand-vars --ugly-comments --output $(ProjectDir)/wwwroot/style.min.css $(ProjectDir)/wwwroot/lib/bootstrap/bootstrap.css $(ProjectDir)/wwwroot/lib/highlight/styles/googlecode.css $(ProjectDir)/wwwroot/custom/style.css" />
+  </Target>
+</Project>

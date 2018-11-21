@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Version>0.11.0</Version>
+    <Authors>Jerry Bian</Authors>
+    <Description>Command line tool for managing private projects.</Description>
+    <Copyright>JerryBian@outlook.com</Copyright>
+    <PackageProjectUrl>https://github.com/JerryBian/laobian</PackageProjectUrl>
+    <PackageLicense>https://raw.githubusercontent.com/JerryBian/laobian/master/LICENSE</PackageLicense>
+    <RepositoryUrl>https://github.com/JerryBian/laobian</RepositoryUrl>
+    <PackageReleaseNotes>Pre release for 1.0</PackageReleaseNotes>
+    <PackageTags>laobian, Jarvis</PackageTags>
+    <PackAsTool>true</PackAsTool>
+    <OutputType>Exe</OutputType>
+    <ToolCommandName>laobian, jarvis</ToolCommandName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Laobian</Company>
+    <PackageIconUrl>https://raw.githubusercontent.com/JerryBian/laobian/master/asset/icon/tools.png?raw=true</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Colorful.Console" Version="1.2.9" />
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+    <PackageReference Include="Laobian.Common" Version="0.11.0" />
+  </ItemGroup>
+
+</Project>

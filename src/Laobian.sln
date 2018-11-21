@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8FD6CC8C-FD86-4166-A810-BD539B4A9B14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laobian.Common", "common\Laobian.Common.csproj", "{EEC3DA83-EBA8-4DDC-A985-E6180BFC9FCC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laobian.Jarvis", "jarvis\Laobian.Jarvis.csproj", "{8CA2574E-9234-4DC4-A7A0-F730B004621D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laobian.Blog", "blog\Laobian.Blog.csproj", "{09A2A143-4083-45B4-B79E-3474D31D2259}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{749BC91B-B231-42C5-A8E1-834B38889AB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laobian.Common.Test", "..\test\Laobian.Common.Test\Laobian.Common.Test.csproj", "{67AF9526-1A60-4EDB-B114-137AB847E801}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EEC3DA83-EBA8-4DDC-A985-E6180BFC9FCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC3DA83-EBA8-4DDC-A985-E6180BFC9FCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC3DA83-EBA8-4DDC-A985-E6180BFC9FCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC3DA83-EBA8-4DDC-A985-E6180BFC9FCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA2574E-9234-4DC4-A7A0-F730B004621D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA2574E-9234-4DC4-A7A0-F730B004621D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA2574E-9234-4DC4-A7A0-F730B004621D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA2574E-9234-4DC4-A7A0-F730B004621D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09A2A143-4083-45B4-B79E-3474D31D2259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09A2A143-4083-45B4-B79E-3474D31D2259}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09A2A143-4083-45B4-B79E-3474D31D2259}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09A2A143-4083-45B4-B79E-3474D31D2259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67AF9526-1A60-4EDB-B114-137AB847E801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67AF9526-1A60-4EDB-B114-137AB847E801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67AF9526-1A60-4EDB-B114-137AB847E801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67AF9526-1A60-4EDB-B114-137AB847E801}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EEC3DA83-EBA8-4DDC-A985-E6180BFC9FCC} = {8FD6CC8C-FD86-4166-A810-BD539B4A9B14}
+		{8CA2574E-9234-4DC4-A7A0-F730B004621D} = {8FD6CC8C-FD86-4166-A810-BD539B4A9B14}
+		{09A2A143-4083-45B4-B79E-3474D31D2259} = {8FD6CC8C-FD86-4166-A810-BD539B4A9B14}
+		{67AF9526-1A60-4EDB-B114-137AB847E801} = {749BC91B-B231-42C5-A8E1-834B38889AB8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EC96E7B4-14D8-4E80-99F0-D7415452C191}
+	EndGlobalSection
+EndGlobal

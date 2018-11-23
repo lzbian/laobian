@@ -90,8 +90,8 @@
         <div class="container text-center pt-3 pb-2">
             <small>
                 &copy; @DateTime.UtcNow.ToChinaTime().Year - @AppSetting.Default.ChineseName
-                &middot; @SystemState.PublishedPosts.ToThousandsPlace() POSTS
-                &middot; @SystemState.VisitLogs.ToThousandsPlace() VISITS
+                &middot; <span title="@SystemState.PublishedPosts.ToThousandsPlace() published posts.">@SystemState.PublishedPosts.ToThousandsPlace() POSTS</span>
+                &middot; <span title="@SystemState.VisitLogs.ToThousandsPlace() succeed visits + @SystemState.StatusLogs.ToThousandsPlace() failed visists.">@(SystemState.VisitLogs.ToThousandsPlace() + SystemState.StatusLogs) VISITS</span>
             </small>
         </div>
     </footer>
@@ -101,6 +101,7 @@
     <!--
     > @SystemState.GetStartupStatistic()
     > @SystemState.GetPostStatistic()
+    > Page generated at @DateTime.UtcNow.ToChinaTime().ToDateAndTime()
     -->
 </body>
 </html>

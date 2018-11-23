@@ -28,7 +28,5 @@ namespace Laobian.Common.Blog
         /// <param name="blogPost">Updated post</param>
         /// <returns>Task</returns>
         Task UpdateAsync(BlogPost blogPost);
-
-        void UpdatePostsCache(List<BlogPost> posts);
     }
 }

@@ -1,20 +1,23 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using Laobian.Common.Base;
+using Laobian.Common.Setting;
 
 namespace Laobian.Common
 {
     public static class SystemState
     {
-        public static TimeSpan PostCacheWindow => TimeSpan.FromHours(8);
-
         public static DateTime StartupTime { get; set; }
 
-        public static DateTime PostCacheTime { get; set; }
+        public static DateTime PostReloadedAt { get; set; }
 
         public static int PublishedPosts { get; set; }
 
         public static int VisitLogs { get; set; }
 
+        public static int StatusLogs { get; set; }
+
+        public static ConcurrentDictionary<Guid, int> PostsVisitCount { get; } = new ConcurrentDictionary<Guid, int>();
 
         public static string GetStartupStatistic()
         {
@@ -23,7 +26,7 @@ namespace Laobian.Common
 
         public static string GetPostStatistic()
         {
-            return $"BlogPost cached at {PostCacheTime.ToChinaTime().ToIso8601()}, next refresh will happen after {PostCacheTime + PostCacheWindow - DateTime.UtcNow}.";
+            return $"BlogPost loaded at {PostReloadedAt.ToChinaTime().ToIso8601()}, next refresh will happen after {PostReloadedAt + AppSetting.Default.BlogPostReloadInterval - DateTime.UtcNow}.";
         }
     }
 }

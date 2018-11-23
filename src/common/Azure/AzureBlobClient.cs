@@ -62,7 +62,7 @@ namespace Laobian.Common.Azure
                     prefix, 
                     true, 
                     BlobListingDetails.All, 
-                    new int?(), 
+                    null, 
                     blobContinuationToken, 
                     null, 
                     null);

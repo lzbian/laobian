@@ -44,6 +44,11 @@ namespace Laobian.Common.Setting
         public string BlogName { get; set; } = "Jerry Bian's Blog";
 
         /// <summary>
+        /// Reload interval for blog posts
+        /// </summary>
+        public TimeSpan BlogPostReloadInterval { get; set; } = TimeSpan.FromHours(4);
+
+        /// <summary>
         /// Pending buffer size for visit logs
         /// </summary>
         public int VisitLogBufferSize { get; set; } = 30;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using Laobian.Common.Base;
 using Laobian.Common.Setting;

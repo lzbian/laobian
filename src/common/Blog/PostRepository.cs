@@ -2,10 +2,10 @@
 using Laobian.Common.Base;
 using Laobian.Common.Cache;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Laobian.Common.Setting;
 
 namespace Laobian.Common.Blog
 {
@@ -17,13 +17,11 @@ namespace Laobian.Common.Blog
         private const string CacheKey = "LAOBIAN_POSTS";
         private readonly IAzureBlobClient _azureClient;
         private readonly ICacheClient _cacheClient;
-        private readonly ConcurrentDictionary<Guid, int> _postsVisitCount;
 
         public PostRepository(IAzureBlobClient azureClient)
         {
             _azureClient = azureClient;
             _cacheClient = new MemoryCacheClient();
-            _postsVisitCount = new ConcurrentDictionary<Guid, int>();
         }
 
         #region Implementation of IPostRepository
@@ -40,7 +38,7 @@ namespace Laobian.Common.Blog
                     return new List<BlogPost>();
                 }
 
-                foreach (var i in _postsVisitCount)
+                foreach (var i in SystemState.PostsVisitCount)
                 {
                     var post = posts.FirstOrDefault(ps => ps.Id == i.Key);
                     post?.SetVisitCount(i.Value);
@@ -108,26 +106,21 @@ namespace Laobian.Common.Blog
             await UploadPostsAsync(posts);
         }
 
-        public void UpdatePostsCache(List<BlogPost> posts)
+        #endregion
+
+        private void UpdatePostsCache(List<BlogPost> posts)
         {
             if (posts == null)
             {
                 posts = new List<BlogPost>();
             }
 
-            foreach (var blogPost in posts)
-            {
-                _postsVisitCount[blogPost.Id] = blogPost.VisitCount;
-            }
-
-            _cacheClient.Set(CacheKey, posts, TimeSpan.FromHours(8));
-            SystemState.PostCacheTime = DateTime.UtcNow;
+            _cacheClient.Set(CacheKey, posts, AppSetting.Default.BlogPostReloadInterval);
+            SystemState.PostReloadedAt = DateTime.UtcNow;
             SystemState.PublishedPosts = posts.Count(p => p.Publish);
         }
 
-        #endregion
-
-        private static void ValidatePost(BlogPost blogPost, IReadOnlyCollection<BlogPost> posts)
+        private void ValidatePost(BlogPost blogPost, IReadOnlyCollection<BlogPost> posts)
         {
             if (posts.FirstOrDefault(p => p != blogPost && p.Url.EqualsIgnoreCase(blogPost.Url)) != null)
             {

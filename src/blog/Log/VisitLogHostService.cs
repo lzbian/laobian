@@ -1,27 +1,22 @@
-﻿using System;
+﻿using Laobian.Common;
+using Laobian.Common.Azure;
+using Laobian.Common.Base;
+using Laobian.Common.Notification;
+using Laobian.Common.Setting;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Laobian.Common;
-using Laobian.Common.Azure;
-using Laobian.Common.Base;
-using Laobian.Common.Blog;
-using Laobian.Common.Notification;
-using Laobian.Common.Setting;
 
 namespace Laobian.Blog.Log
 {
     public class VisitLogHostService : LogHostService
     {
-        private readonly IPostRepository _postRepository;
-
         public VisitLogHostService(
-            ILogger logger, 
+            ILogger logger,
             IEmailEmitter emailEmitter,
-            IAzureBlobClient azureClient,
-            IPostRepository postRepository) : base(logger, azureClient, emailEmitter)
+            IAzureBlobClient azureClient) : base(logger, azureClient, emailEmitter)
         {
-            _postRepository = postRepository;
             Logger.NewVisitLog += (sender, args) =>
             {
                 var blobName = GetBlobName(args.Category, args.Log.Id.Normal());
@@ -45,10 +40,15 @@ namespace Laobian.Blog.Log
             }
         }
 
-        protected override async Task InitAsync(string subContainerName = null)
+        protected override string GetBaseContainerName()
         {
-            await base.InitAsync(subContainerName);
-            await SetPostsVisitCountAsync();
+            return BlobNameProvider.Normalize("log");
+        }
+
+        protected override async Task InitAsync()
+        {
+            await base.InitAsync();
+            SetPostsVisitCount();
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
@@ -60,7 +60,6 @@ namespace Laobian.Blog.Log
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             await ExecuteInternalAsync();
-            await EmailEmitter.EmitHealthyAsync("<p>Visit Logs Flushed due to service is stopping...</p>");
             await base.StopAsync(cancellationToken);
         }
 
@@ -80,22 +79,19 @@ namespace Laobian.Blog.Log
             return BlobNameProvider.Normalize(name);
         }
 
-        private async Task SetPostsVisitCountAsync()
+        private void SetPostsVisitCount()
         {
             var logs = GetLogs();
-            var posts = await _postRepository.GetPostsAsync();
-            foreach (var log in logs) // same group logs own same ID.
+            SystemState.PostsVisitCount.Clear();
+            foreach (var log in logs)
             {
-                var postPrefix = BlobNameProvider.Normalize($"{BaseContainerName}/{VisitLogCategory.Post}/");
-                if (log.Key.StartsWith(postPrefix))
+                if (TryExtractPostId(log.Key, out var postId))
                 {
-                    var post = posts.FirstOrDefault(ps => ps.Id.Normal() == log.Key.Replace(postPrefix, string.Empty));
-                    post?.SetVisitCount(log.Value.Count);
+                    SystemState.PostsVisitCount[postId] = log.Value.Count;
                 }
             }
 
-            _postRepository.UpdatePostsCache(posts);
-            SystemState.VisitLogs = logs.Count;
+            SystemState.VisitLogs = logs.SelectMany(ls => ls.Value).Count();
         }
 
         private async Task ExecuteInternalAsync()
@@ -106,12 +102,29 @@ namespace Laobian.Blog.Log
                 Flush();
 
                 // after flush, we also need to update Posts visit count in cache
-                await SetPostsVisitCountAsync();
+                SetPostsVisitCount();
             }
             catch (Exception ex)
             {
                 await EmailEmitter.EmitErrorAsync($"<p>Visit Log host service error: {ex.Message}</p>", ex);
             }
+        }
+
+        private bool TryExtractPostId(string blobName, out Guid postId)
+        {
+            var postPrefix = BlobNameProvider.Normalize($"{GetBaseContainerName()}/{VisitLogCategory.Post}/");
+            var index = blobName.IndexOf(postPrefix, StringComparison.Ordinal);
+            if (index >= 0)
+            {
+                var postIdString = blobName.Substring(index + postPrefix.Length);
+                if (Guid.TryParse(postIdString, out postId))
+                {
+                    return true;
+                }
+            }
+
+            postId = Guid.Empty;
+            return false;
         }
     }
 }

@@ -8,13 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Laobian.Common;
 using Laobian.Common.Base;
 
 namespace Laobian.Blog.Log
 {
     public class StatusLogHostService : LogHostService
     {
-        private const string SubContainerName = "status";
         private readonly string _emailTemplate;
 
         public StatusLogHostService(
@@ -39,7 +39,7 @@ namespace Laobian.Blog.Log
                         </table>";
             Logger.NewStatusLog += (sender, args) =>
             {
-                var blobName = BlobNameProvider.Normalize($"{SubContainerName}/{args.StatusCode}");
+                var blobName = BlobNameProvider.Normalize($"{args.StatusCode}");
                 Add(blobName, args.Log);
             };
         }
@@ -56,20 +56,19 @@ namespace Laobian.Blog.Log
                     await ExecuteInternalAsync(logs);
                 }
 
-                await Task.Delay(TimeSpan.FromMilliseconds(100), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            await InitAsync(SubContainerName);
+            await InitAsync();
             await base.StartAsync(cancellationToken);
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             await ExecuteInternalAsync(GetPendingLogs());
-            await EmailEmitter.EmitHealthyAsync("<p>Status Logs Flushed due to service is stopping...</p>");
             await base.StopAsync(cancellationToken);
         }
 
@@ -78,6 +77,7 @@ namespace Laobian.Blog.Log
             try
             {
                 Flush(logs);
+                SystemState.StatusLogs = GetLogs().SelectMany(ls => ls.Value).Count();
             }
             catch (Exception ex)
             {
@@ -105,6 +105,11 @@ namespace Laobian.Blog.Log
             {
                 await EmailEmitter.EmitHealthyAsync(messages.ToString());
             }
+        }
+
+        protected override string GetBaseContainerName()
+        {
+            return BlobNameProvider.Normalize("status");
         }
     }
 }

@@ -13,7 +13,6 @@ namespace Laobian.Blog.Log
     public abstract class LogHostService : BackgroundService
     {
         protected readonly ILogger Logger;
-        protected const string BaseContainerName = "log";
 
         protected DateTime LastFlushAt;
         protected IEmailEmitter EmailEmitter;
@@ -32,11 +31,13 @@ namespace Laobian.Blog.Log
             _pendingLogs = new ConcurrentDictionary<string, List<BlogLog>>();
         }
 
+        protected abstract string GetBaseContainerName();
+
         // we always return copy of In-Memory logs, so that new logs will allow to add at the same time
         protected ConcurrentDictionary<string, List<BlogLog>> GetLogs()
         {
             var logs = new ConcurrentDictionary<string, List<BlogLog>>();
-            foreach (var log in _logs)
+            foreach (var log in _logs.ToList())
             {
                 logs.TryAdd(log.Key, log.Value.ToList());
             }
@@ -48,7 +49,7 @@ namespace Laobian.Blog.Log
         protected ConcurrentDictionary<string, List<BlogLog>> GetPendingLogs()
         {
             var logs = new ConcurrentDictionary<string, List<BlogLog>>();
-            foreach (var log in _pendingLogs)
+            foreach (var log in _pendingLogs.ToList())
             {
                 logs.TryAdd(log.Key, log.Value.ToList());
             }
@@ -59,9 +60,9 @@ namespace Laobian.Blog.Log
         // only add to pending buffer
         protected void Add(string blobName, BlogLog log)
         {
-            if (!blobName.StartsWith($"{BaseContainerName}/"))
+            if (!blobName.StartsWith($"{GetBaseContainerName()}/"))
             {
-                blobName = $"{BaseContainerName}/{blobName}";
+                blobName = $"{GetBaseContainerName()}/{blobName}"; // a general fix if forget
             }
 
             if (!_pendingLogs.TryGetValue(blobName, out var logs) || logs == null)
@@ -73,16 +74,13 @@ namespace Laobian.Blog.Log
             logs.Add(log);
         }
 
-        protected virtual async Task InitAsync(string subContainerName = null)
+        protected virtual async Task InitAsync()
         {
             _logs.Clear();
 
-            subContainerName = string.IsNullOrEmpty(subContainerName) ? BaseContainerName : $"{BaseContainerName}/{subContainerName}";
-            subContainerName = BlobNameProvider.Normalize(subContainerName);
-
             foreach (var data in await _azureBlobClient.ListAsync(
                 BlobContainer.Private, 
-                BlobNameProvider.Normalize(subContainerName)))
+                BlobNameProvider.Normalize(GetBaseContainerName())))
             {
                 using (data.Stream)
                 {
@@ -104,14 +102,17 @@ namespace Laobian.Blog.Log
             // merge to logs
             foreach (var pendingLog in pendingLogs)
             {
-                if (logs.ContainsKey(pendingLog.Key))
+                logs.AddOrUpdate(pendingLog.Key, pendingLog.Value, (key, existingLogs) =>
                 {
-                    logs[pendingLog.Key].AddRange(pendingLog.Value);
-                }
-                else
+                    existingLogs.AddRange(pendingLog.Value);
+                    return existingLogs;
+                });
+
+                _logs.AddOrUpdate(pendingLog.Key, pendingLog.Value, (key, existingLogs) =>
                 {
-                    logs[pendingLog.Key] = pendingLog.Value;
-                }
+                    existingLogs.AddRange(pendingLog.Value);
+                    return existingLogs;
+                });
             }
 
             Parallel.ForEach(logs, async item =>

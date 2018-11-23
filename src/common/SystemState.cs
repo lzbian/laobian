@@ -17,6 +17,8 @@ namespace Laobian.Common
 
         public static int StatusLogs { get; set; }
 
+        public static int TotalLogs => VisitLogs + StatusLogs;
+
         public static ConcurrentDictionary<Guid, int> PostsVisitCount { get; } = new ConcurrentDictionary<Guid, int>();
 
         public static string GetStartupStatistic()

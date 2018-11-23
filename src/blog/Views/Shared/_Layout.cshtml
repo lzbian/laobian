@@ -91,7 +91,7 @@
             <small>
                 &copy; @DateTime.UtcNow.ToChinaTime().Year - @AppSetting.Default.ChineseName
                 &middot; <span title="@SystemState.PublishedPosts.ToThousandsPlace() published posts.">@SystemState.PublishedPosts.ToThousandsPlace() POSTS</span>
-                &middot; <span title="@SystemState.VisitLogs.ToThousandsPlace() succeed visits + @SystemState.StatusLogs.ToThousandsPlace() failed visists.">@(SystemState.VisitLogs.ToThousandsPlace() + SystemState.StatusLogs) VISITS</span>
+                &middot; <span title="@SystemState.VisitLogs.ToThousandsPlace() succeed visits + @SystemState.StatusLogs.ToThousandsPlace() failed visists.">@SystemState.TotalLogs VISITS</span>
             </small>
         </div>
     </footer>

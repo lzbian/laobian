@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using Laobian.Common.Base;
 using Laobian.Common.Setting;
@@ -16,6 +16,8 @@ namespace Laobian.Common
         public static int VisitLogs { get; set; }
 
         public static int StatusLogs { get; set; }
+
+        public static int TotalLogs => VisitLogs + StatusLogs;
 
         public static ConcurrentDictionary<Guid, int> PostsVisitCount { get; } = new ConcurrentDictionary<Guid, int>();
 
